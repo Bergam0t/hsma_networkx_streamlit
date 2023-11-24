@@ -127,7 +127,7 @@ G = create_graph(nodes,edges)
 
 # add streamlit inputs
 layout = st.radio(label="Select layout",
-                  options=["circle", "random", "grid", "fcose", "concentric",
+                  options=["fcose", "circle", "random", "grid", "concentric",
                            "breadthfirst", "cose", "klay", "polywas", "spread"])
 
 min_threshold_weight = st.slider(
