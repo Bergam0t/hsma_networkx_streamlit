@@ -175,7 +175,7 @@ stylesheet = [
 
 layout = st.radio(label="Select layout",
                   options=["fcose", "random", "grid", "circle", "concentric",
-                           "breadthfirst", "cose", "klay", "polywas", "spread"])
+                           "breadthfirst", "cose", "klay"])
 
 selected = cytoscape(elements, 
                      stylesheet, 

@@ -125,10 +125,38 @@ G = create_graph(nodes,edges)
 # pos = nx.circular_layout(G)
 # Define the attribute inputs
 
+st.markdown(
+    """
+    Node size reflects betweenness centrality.
+   
+    Betweenness centrality is 'a widely used measure that captures a person's role in allowing information to pass from one part of the network to the other.'
+    
+    [Source](https://www.sciencedirect.com/topics/computer-science/betweenness-centrality)
+    
+    Colour reflects group membership. 
+
+    Communities were detected using Clauset-Newman-Moore modularity maximisation. 
+    
+    [Source](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.modularity_max.greedy_modularity_communities.html) 
+    
+    Filtering is done on the weight of the 
+
+    **Filtering should be used with extreme caution.** 
+    In this directional graph, filtering of weights is done per direction and could lead to some very misleading outputs - for example, if A --> B has a weight of 99, but B --> A has a weight of 101 and your threshold is 100, you'd lose the A --> B connection while it would look like B --> A mattered.
+    
+    If there are no remaining links after filtering, the node is removed from the dataset.
+    
+    
+    Game of thrones data from [this repo](https://github.com/hsma-programme/4d_advanced_network_analysis_pt2/tree/main/data)
+    """
+)
+
+
+
 # add streamlit inputs
 layout = st.radio(label="Select layout",
                   options=["fcose", "circle", "random", "grid", "concentric",
-                           "breadthfirst", "cose", "klay", "polywas", "spread"])
+                           "breadthfirst", "cose", "klay"])
 
 min_threshold_weight = st.slider(
     "Filter out edges that don't meet this threshold weight", 
@@ -202,21 +230,8 @@ stylesheet = [
     # }
 ]
 
-st.markdown(
-    """
-    Node size reflects betweenness centrality.
-   
-    Betweenness centrality is 'a widely used measure that captures a person's role in allowing information to pass from one part of the network to the other.'
-    
-    [Source](https://www.sciencedirect.com/topics/computer-science/betweenness-centrality)
-    
-    Colour reflects group membership. 
 
-    Communities were detected using Clauset-Newman-Moore modularity maximisation. 
-    
-    [Source](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.modularity_max.greedy_modularity_communities.html) 
-    """
-)
+# Deal with the output on the page
 
 selected = cytoscape(elements, 
                      stylesheet, 
