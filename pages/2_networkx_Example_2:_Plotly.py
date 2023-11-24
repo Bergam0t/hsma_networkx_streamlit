@@ -25,6 +25,7 @@ gc.collect()
 st.markdown(
     """
     This is just the networkx plotly example from the plotly documentation. 
+    
     https://plotly.com/python/network-graphs/
     """
 )

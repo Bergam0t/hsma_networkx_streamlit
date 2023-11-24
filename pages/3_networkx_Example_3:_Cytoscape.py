@@ -5,7 +5,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from helper_functions import add_logo
 import gc
-
+from st_cytoscape import cytoscape
 
 st.set_page_config(
     page_title="Static 2D Example",
@@ -26,9 +26,15 @@ gc.collect()
 
 st.markdown(
     """
-    This is an example of a static matplotlib plot using the simple networkx vis example from HSMA5.
+    This is an example of an interactive 2d plot where individual nodes can be selected.
+    
+    The underlying graph code is from 
     
     https://github.com/hsma-programme/4d_advanced_network_analysis_pt2/blob/main/code_along/networkx_vis_example.py
+    
+    The visualisation implementation is done with st-cytoscape
+    
+    https://github.com/vivien000/st-cytoscape
     """
 )
 
@@ -91,8 +97,27 @@ alpha = 0.8
 # st.pyplot(plot)
 # You will receive a warning as this is a deprecated approach 
 
-fig, ax = plt.subplots()
+# fig, ax = plt.subplots()
 
-ax = nx.draw(G, pos, node_size=n_size, node_color=n_col, node_shape=shape, alpha=alpha, edge_color=e_col,arrows=True)
+# ax = nx.draw(G, pos, node_size=n_size, node_color=n_col, node_shape=shape, alpha=alpha, edge_color=e_col,arrows=True)
 
-st.pyplot(fig)
+# st.pyplot(fig)
+
+G_cs = nx.cytoscape_data(G)
+
+elements = G_cs['elements']
+
+
+stylesheet = [
+    {"selector": "node", "style": {"label": "data(id)", "width": 20, "height": 20}},
+    {
+        "selector": "edge",
+        "style": {
+            "width": 3,
+            "curve-style": "bezier",
+            "target-arrow-shape": "triangle",
+        },
+    },
+]
+
+selected = cytoscape(elements, stylesheet, key="graph")
