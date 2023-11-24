@@ -19,7 +19,7 @@
     <script>
       stlite.mount(
   {
-    requirements: ["pandas", "plotly", "numpy", "asyncio", "st_cytoscape", "networkx"],
+    requirements: ["pandas", "plotly", "numpy", "asyncio", "st_cytoscape", "networkx", "matplotlib"],
     entrypoint: "Introduction.py",
     files: {
       "Introduction.py": `
@@ -59,10 +59,23 @@ This is a collection of examples demonstrating the display of network graphs in 
         url: "https://raw.githubusercontent.com/bergam0t/hsma_networkx_streamlit/main/pages/2_networkx_Example_1:_Plotly.py"
       },
 
+"pages/3_networkx_Example_3:_Cytoscape.py": {
+        url: "https://raw.githubusercontent.com/bergam0t/hsma_networkx_streamlit/main/pages/2_networkx_Example_1:_Plotly.py"
+      },
+
+"pages/4_networkx_Example_4:_Complex_Cytoscape.py": {
+        url: "https://raw.githubusercontent.com/bergam0t/hsma_networkx_streamlit/main/pages/2_networkx_Example_1:_Plotly.py"
+      },
+
 "helper_functions.py": {
         url: "https://raw.githubusercontent.com/bergam0t/hsma_networkx_streamlit/main/helper_functions.py"
+      },
+"data/got-s1-edges.csv": {
+        url: "https://raw.githubusercontent.com/bergam0t/hsma_networkx_streamlit/main/data/got-s1-edges.csv"
+      },
+"data/got-s1-nodes.csv": {
+        url: "https://raw.githubusercontent.com/bergam0t/hsma_networkx_streamlit/main/data/got-s1-nodes.csv"
       }
-      
   
     },
   },
