@@ -215,6 +215,8 @@ bb = nx.betweenness_centrality(G4).values()
 
 elements = G_cs['elements']
 
+# This is a nice example of how to adjust the stylesheet
+# https://github.com/cytoscape/cytoscape.js/blob/master/documentation/demos/colajs-graph/cy-style.json
 stylesheet = [
     {
         "selector": "node", 
@@ -233,7 +235,7 @@ stylesheet = [
         "style": {
             "width": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 5)',
             "curve-style": "bezier",
-            "alpha": f'mapData(Weight, 0, {edges["Weight"].max()}, 0.05, 1)'
+            "opacity": f'mapData(Weight, 0, {edges["Weight"].max()}, 0.4, 1)'
             #"target-arrow-shape": "triangle",
             #"arrow-scale": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 1)'
         },
@@ -265,10 +267,22 @@ stylesheet = [
 
 # Deal with the output on the page
 
+st.subheader("Interactions between characters in Game of Thrones - Series 1")
+
 selected = cytoscape(elements, 
                      stylesheet, 
                      key="graph", 
                      layout={"name": layout}, 
                      height="900px")
 
-st.markdown(f"Links representing fewer than {min_threshold_weight} interactions have been removed from this graph. Interpret with caution.")
+st.markdown(f"""
+    Links representing fewer than {min_threshold_weight} interactions have been removed from this graph. 
+    
+    Characters with fewer than than {min_total_interactions} interactions have been removed from this graph. 
+
+    {len(G4.nodes)} of {len(nodes)} nodes in original dataset displayed after filtering.
+
+    **Interpret with caution.**
+
+    """)
+
