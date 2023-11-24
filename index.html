@@ -19,35 +19,35 @@
     <script>
       stlite.mount(
   {
-    requirements: ["pandas", "simpy", "plotly", "numpy", "asyncio"],
+    requirements: ["pandas", "plotly", "numpy", "asyncio", "st_cytoscape", "networkx"],
     entrypoint: "Introduction.py",
     files: {
       "Introduction.py": `
-      import gc
-      import streamlit as st
-      from helper_functions import add_logo, mermaid
+import gc
+import streamlit as st
+from helper_functions import add_logo, mermaid
 
-      st.set_page_config(
-          page_title="Introduction",
-          page_icon="👋",
-          layout="wide",
-          initial_sidebar_state="expanded",
-      )
+st.set_page_config(
+    page_title="Introduction",
+    page_icon="👋",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
-      add_logo()
+add_logo()
 
-      with open("style.css") as css:
-          st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
+with open("style.css") as css:
+    st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
 
-      st.title("Streamlit for Healthcare Network Graphs")
+st.title("Streamlit for Healthcare Network Graphs")
 
-      gc.collect()
+gc.collect()
 
-      st.markdown(
-      """
-      This is a collection of examples demonstrating the display of network graphs in Streamlit.
-      """
-      )
+st.markdown(
+"""
+This is a collection of examples demonstrating the display of network graphs in Streamlit.
+"""
+)
 
 
 `,
