@@ -52,8 +52,8 @@ nodes = pd.read_csv("data/got-s1-nodes.csv").rename(columns={"Id": "ID"})
 # nodes = pd.DataFrame(nodes)
 # edges = pd.DataFrame(edges)
 
-# nodeData = nodes
-# edgeData = edges
+nodeData = nodes
+edgeData = edges
 
 #Create graph function - networkX
 def create_graph(nodeData, edgeData):
@@ -92,7 +92,29 @@ def create_graph(nodeData, edgeData):
     bb = nx.betweenness_centrality(G)
     nx.set_node_attributes(G, bb, "Size")
 
-    # nx.set_node_attributes(G, sizeDicts, "Size")
+    c = nx.community.greedy_modularity_communities(G)
+
+    community_dict = pd.DataFrame(c).reset_index(drop=False).melt(id_vars="index")[['value','index']]
+    community_dict = community_dict[community_dict['value'].notnull()]
+    communityDicts = {}
+    communityDicts.update(zip(community_dict['value'], community_dict['index']))
+
+    nx.set_node_attributes(G, communityDicts, "Community")
+
+    color_df = pd.DataFrame(
+        [{'index': 0, 'color': "#fbf59a"},
+        {'index': 1, 'color': "#674ea7"},
+        {'index': 2, 'color': "#72a45d"},
+        {'index': 3, 'color': "#f2600b"},
+        {'index': 4, 'color': "#2986cc"}]
+    )
+
+    community_dict = community_dict.merge(color_df, how="left", on="index")
+
+    communityColorDicts = {}
+    communityColorDicts.update(zip(community_dict['value'], community_dict['color']))
+
+    nx.set_node_attributes(G, communityColorDicts, "CommunityColor")
     # nx.set_node_attributes(G, colorDicts, "Color")
 
     return G
@@ -103,31 +125,7 @@ G = create_graph(nodes,edges)
 # pos = nx.circular_layout(G)
 # Define the attribute inputs
 
-
-
-# e_size = nx.get_edge_attributes(G,'Weight')
-e_col = np.array(['#2c96c7','#32a852',
-                  '#bd132f','#e6c315',
-                  '#e315e6','#2c96c7',
-                  '#32a852','#bd132f',
-                  '#e6c315','#e315e6'])
-shape = 'D'
-alpha = 0.8
-# Draw the graph and add edge labels
-# nx.draw_networkx_edge_labels(G,pos,edge_labels=e_size)
-
-# Has to be written in this way to be threadsafe for streamlit
-# if you just try to use the original code of 
-# plot = nx.draw(G, pos, node_size=n_size, node_color=n_col, node_shape=shape, alpha=alpha, edge_color=e_col,arrows=True)
-# st.pyplot(plot)
-# You will receive a warning as this is a deprecated approach 
-
-# fig, ax = plt.subplots()
-
-# ax = nx.draw(G, pos, node_size=n_size, node_color=n_col, node_shape=shape, alpha=alpha, edge_color=e_col,arrows=True)
-
-# st.pyplot(fig)
-
+# add streamlit inputs
 layout = st.radio(label="Select layout",
                   options=["circle", "random", "grid", "fcose", "concentric",
                            "breadthfirst", "cose", "klay", "polywas", "spread"])
@@ -138,6 +136,7 @@ min_threshold_weight = st.slider(
     int(edges["Weight"].max())
     )
 
+# Define the edge filter 
 def filter_edge(n1, n2):
 
     return G[n1][n2]['Weight'] >= min_threshold_weight
@@ -153,19 +152,19 @@ G3.remove_nodes_from(list(nx.isolates(G3)))
 
 G_cs = nx.cytoscape_data(G3)
 
-elements = G_cs['elements']
+bb = nx.betweenness_centrality(G3).values()
 
-# G.nodes['ROBERT']
+elements = G_cs['elements']
 
 stylesheet = [
     {
         "selector": "node", 
         "style": {
             "label": "data(Label)", 
-            "width": "data(Size)", 
-            "height": "data(Size)",
+            "width": f"mapData(Size, 1, {max(bb)}, 1, 10)", 
+            "height": f"mapData(Size, 1, {max(bb)}, 1, 10)",
             "font-size": "10px",
-            # "background-color": "data(Color)"
+            "background-color": "data(CommunityColor)"
             
             }
         },
@@ -176,7 +175,7 @@ stylesheet = [
             "width": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 5)',
             "curve-style": "bezier",
             "target-arrow-shape": "triangle",
-            "arrow-scale": 1
+            "arrow-scale": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 1)'
         },
     },
 
