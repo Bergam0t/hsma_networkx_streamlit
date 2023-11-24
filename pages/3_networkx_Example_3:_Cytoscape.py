@@ -40,7 +40,9 @@ st.markdown(
 
 # Create some simple graph data
 nodes = {'ID':['1','2','3','4','5'],
-         'Label':['1','2','3','4','5']}
+         'Label':['Aspirin','Paracetamol','Ibuprofen','Codeine','Naproxen'],
+         'Size': [50,60,75,40,100],
+         'Color': ['#2c96c7','#32a852','#bd132f','#e6c315','#e315e6']}
 edges = {'Source':['1','1','2','2','3','3','4','4','5','5'],
          'Target':['2','3','3','4','4','5','5','1','1','2'],
          'Weight':[3,6,4,7,8,2,4,3,2,5]}
@@ -48,39 +50,58 @@ edges = {'Source':['1','1','2','2','3','3','4','4','5','5'],
 nodes = pd.DataFrame(nodes)
 edges = pd.DataFrame(edges)
 
+nodeData = nodes
+edgeData = edges
+
 #Create graph function - networkX
 def create_graph(nodeData, edgeData):
     ## Initiate the graph object
     G = nx.DiGraph()
     
     ## Tranform the data into the correct format for use with NetworkX
+    
     # Node tuples (ID, dict of attributes)
     idList = nodeData['ID'].tolist()
+    
     labels =  pd.DataFrame(nodeData['Label'])
     labelDicts = labels.to_dict(orient='records')
+
     nodeTuples = [tuple(r) for r in zip(idList,labelDicts)]
+    
     
     # Edge tuples (Source, Target, dict of attributes)
     sourceList = edgeData['Source'].tolist()
     targetList = edgeData['Target'].tolist()
+    
     weights = pd.DataFrame(edgeData['Weight'])
     weightDicts = weights.to_dict(orient='records')
+    
     edgeTuples = [tuple(r) for r in zip(sourceList,targetList,weightDicts)]
     
     ## Add the nodes and edges to the graph
     G.add_nodes_from(nodeTuples)
     G.add_edges_from(edgeTuples)
-    
+
+    sizeDicts = {}
+    sizeDicts.update(zip(nodeData['ID'], nodeData['Size']))
+
+    colorDicts = {}
+    colorDicts.update(zip(nodeData['ID'], nodeData['Color']))
+
+    nx.set_node_attributes(G, sizeDicts, "Size")
+    nx.set_node_attributes(G, colorDicts, "Color")
+
     return G
 
 # Create the graph object
 G = create_graph(nodes,edges)
 # Define the node positions
-pos = nx.circular_layout(G)
+# pos = nx.circular_layout(G)
 # Define the attribute inputs
-n_size = [100,120,150,80,200]
-n_col = ['#2c96c7','#32a852','#bd132f','#e6c315','#e315e6']
-e_size = nx.get_edge_attributes(G,'Weight')
+
+
+
+# e_size = nx.get_edge_attributes(G,'Weight')
 e_col = np.array(['#2c96c7','#32a852',
                   '#bd132f','#e6c315',
                   '#e315e6','#2c96c7',
@@ -109,15 +130,55 @@ elements = G_cs['elements']
 
 
 stylesheet = [
-    {"selector": "node", "style": {"label": "data(id)", "width": 20, "height": 20}},
+    {
+        "selector": "node", 
+        "style": {
+            "label": "data(Label)", 
+            "width": "data(Size)", 
+            "height": "data(Size)",
+            "background-color": "data(Color)"
+            
+            }
+        },
+
     {
         "selector": "edge",
         "style": {
-            "width": 3,
+            "width": 'data(Weight)',
             "curve-style": "bezier",
             "target-arrow-shape": "triangle",
         },
     },
+
+    # {
+    #     "layout": {
+    #         # 'EdgeLength': length,
+    #         'maxSimulationTime': 8000,
+    #         'convergenceThreshold': 0.001,
+    #         'nodeOverlap': 20,
+    #         'refresh': 20,
+    #         'fit': True,
+    #         'padding': 30,
+    #         'randomize': True,
+    #         'componentSpacing': 100,
+    #         'nodeRepulsion': 400000,
+    #         'edgeElasticity': 100000,
+    #         'nestingFactor': 5,
+    #         'gravity': 80,
+    #         'numIter': 1000,
+    #         'initialTemp': 200,
+    #         'coolingFactor': 0.95,
+    #         'minTemp': 1.0
+    #     }
+    # }
 ]
 
-selected = cytoscape(elements, stylesheet, key="graph")
+layout = st.radio(label="Select layout",
+                  options=["fcose", "random", "grid", "circle", "concentric",
+                           "breadthfirst", "cose", "klay", "polywas", "spread"])
+
+selected = cytoscape(elements, 
+                     stylesheet, 
+                     key="graph", 
+                     layout={"name": layout}, 
+                     height="500px")
