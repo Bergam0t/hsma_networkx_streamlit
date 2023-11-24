@@ -161,8 +161,8 @@ stylesheet = [
         "selector": "node", 
         "style": {
             "label": "data(Label)", 
-            "width": f"mapData(Size, 1, {max(bb)}, 1, 10)", 
-            "height": f"mapData(Size, 1, {max(bb)}, 1, 10)",
+            "width": f"mapData(Size, {min(bb)}, {max(bb)}, 3, 15)", 
+            "height": f"mapData(Size, {min(bb)}, {max(bb)}, 3, 15)",
             "font-size": "10px",
             "background-color": "data(CommunityColor)"
             
@@ -202,6 +202,21 @@ stylesheet = [
     # }
 ]
 
+st.markdown(
+    """
+    Node size reflects betweenness centrality.
+   
+    Betweenness centrality is 'a widely used measure that captures a person's role in allowing information to pass from one part of the network to the other.'
+    
+    [Source](https://www.sciencedirect.com/topics/computer-science/betweenness-centrality)
+    
+    Colour reflects group membership. 
+
+    Communities were detected using Clauset-Newman-Moore modularity maximisation. 
+    
+    [Source](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.modularity_max.greedy_modularity_communities.html) 
+    """
+)
 
 selected = cytoscape(elements, 
                      stylesheet, 
