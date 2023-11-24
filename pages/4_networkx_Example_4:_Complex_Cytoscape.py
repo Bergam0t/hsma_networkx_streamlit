@@ -58,7 +58,8 @@ edgeData = edges
 #Create graph function - networkX
 def create_graph(nodeData, edgeData):
     ## Initiate the graph object
-    G = nx.DiGraph()
+    G = nx.Graph()
+    # G = nx.DiGraph()
     
     ## Tranform the data into the correct format for use with NetworkX
     
@@ -139,12 +140,17 @@ st.markdown(
     
     [Source](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.modularity_max.greedy_modularity_communities.html) 
     
-    Filtering is done on the weight of the 
+    Filtering is done on the weight of the edges (in this case, number of interactions between characters)
 
-    **Filtering should be used with extreme caution.** 
-    In this directional graph, filtering of weights is done per direction and could lead to some very misleading outputs - for example, if A --> B has a weight of 99, but B --> A has a weight of 101 and your threshold is 100, you'd lose the A --> B connection while it would look like B --> A mattered.
-    
     If there are no remaining links after filtering, the node is removed from the dataset.
+
+
+    **Filtering should be used with caution.** 
+    
+    In a directional graph, filtering of weights is done per direction and could lead to some very misleading outputs - for example, if A --> B has a weight of 99, but B --> A has a weight of 101 and your threshold is 100, you'd lose the A --> B connection while it would look like B --> A mattered.
+    
+    In an undirected graph, it may give the impression that two characters have never interacted with each other.
+
     
     
     Game of thrones data from [this repo](https://github.com/hsma-programme/4d_advanced_network_analysis_pt2/tree/main/data)
@@ -156,7 +162,8 @@ st.markdown(
 # add streamlit inputs
 layout = st.radio(label="Select layout",
                   options=["fcose", "circle", "random", "grid", "concentric",
-                           "breadthfirst", "cose", "klay"])
+                           "breadthfirst", "cose", "klay"],
+                  horizontal=True)
 
 min_threshold_weight = st.slider(
     "Filter out edges that don't meet this threshold weight", 
@@ -191,7 +198,7 @@ stylesheet = [
             "label": "data(Label)", 
             "width": f"mapData(Size, {min(bb)}, {max(bb)}, 3, 15)", 
             "height": f"mapData(Size, {min(bb)}, {max(bb)}, 3, 15)",
-            "font-size": "10px",
+            "font-size": "8px",
             "background-color": "data(CommunityColor)"
             
             }
@@ -202,8 +209,9 @@ stylesheet = [
         "style": {
             "width": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 5)',
             "curve-style": "bezier",
-            "target-arrow-shape": "triangle",
-            "arrow-scale": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 1)'
+            "alpha": f'mapData(Weight, 0, {edges["Weight"].max()}, 0.05, 1)'
+            #"target-arrow-shape": "triangle",
+            #"arrow-scale": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 1)'
         },
     },
 
@@ -238,3 +246,5 @@ selected = cytoscape(elements,
                      key="graph", 
                      layout={"name": layout}, 
                      height="900px")
+
+st.markdown(f"Links representing fewer than {min_threshold_weight} interactions have been removed from this graph. Interpret with caution.")
