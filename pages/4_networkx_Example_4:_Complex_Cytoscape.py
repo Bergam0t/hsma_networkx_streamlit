@@ -40,6 +40,11 @@ st.markdown(
 edges = pd.read_csv("data/got-s1-edges.csv")
 nodes = pd.read_csv("data/got-s1-nodes.csv").rename(columns={"Id": "ID"})
 
+total_interactions_node = pd.concat([edges[['Source', 'Weight']].groupby('Source').sum().reset_index(drop=False),
+                                     edges[['Target', 'Weight']].groupby('Target').sum().reset_index(drop=False).rename(columns={'Target':'Source'})]
+                                     ).groupby('Source').sum().rename(columns={'Weight':'TotalInteractions'})
+
+nodes = nodes.merge(total_interactions_node, how="left", left_on="ID", right_on="Source")
 # Create some simple graph data
 # nodes = {'ID':['1','2','3','4','5'],
 #          'Label':['Aspirin','Paracetamol','Ibuprofen','Codeine','Naproxen'],
@@ -85,8 +90,9 @@ def create_graph(nodeData, edgeData):
     G.add_nodes_from(nodeTuples)
     G.add_edges_from(edgeTuples)
 
-    # sizeDicts = {}
-    # sizeDicts.update(zip(nodeData['ID'], nodeData['Size']))
+    totalInteractionsDicts = {}
+    totalInteractionsDicts.update(zip(nodeData['ID'], nodeData['TotalInteractions']))
+    nx.set_node_attributes(G, totalInteractionsDicts, "TotalInteractions")
 
     # colorDicts = {}
     # colorDicts.update(zip(nodeData['ID'], nodeData['Color']))
@@ -185,9 +191,27 @@ G2 = nx.subgraph_view(G,
 G3 = G2.copy()
 G3.remove_nodes_from(list(nx.isolates(G3)))
 
-G_cs = nx.cytoscape_data(G3)
 
-bb = nx.betweenness_centrality(G3).values()
+
+min_total_interactions = st.slider(
+    "Filter out characters with fewer than a threshold number of interactions", 
+    int(1),
+    int(nodes["TotalInteractions"].max())
+    )
+
+# Define the edge filter 
+def filter_node(n1):
+
+    return G.nodes[n1]['TotalInteractions'] >= min_total_interactions
+
+G4 = nx.subgraph_view(G3, 
+                     filter_node=filter_node)
+
+
+
+G_cs = nx.cytoscape_data(G4)
+
+bb = nx.betweenness_centrality(G4).values()
 
 elements = G_cs['elements']
 
@@ -218,22 +242,22 @@ stylesheet = [
     # {
     #     "layout": {
     #         # 'EdgeLength': length,
-    #         'maxSimulationTime': 8000,
-    #         'convergenceThreshold': 0.001,
-    #         'nodeOverlap': 20,
-    #         'refresh': 20,
-    #         'fit': True,
-    #         'padding': 30,
-    #         'randomize': True,
-    #         'componentSpacing': 100,
-    #         'nodeRepulsion': 400000,
-    #         'edgeElasticity': 100000,
-    #         'nestingFactor': 5,
-    #         'gravity': 80,
-    #         'numIter': 1000,
-    #         'initialTemp': 200,
-    #         'coolingFactor': 0.95,
-    #         'minTemp': 1.0
+    #         # 'maxSimulationTime': 8000,
+    #         # 'convergenceThreshold': 0.001,
+    #         # 'nodeOverlap': 20,
+    #         # 'refresh': 20,
+    #         # 'fit': True,
+    #         # 'padding': 30,
+    #         # 'randomize': True,
+    #         # 'componentSpacing': 100,
+    #         'nodeRepulsion': 400,
+    #         # 'edgeElasticity': 100000,
+    #         # 'nestingFactor': 5,
+    #         # 'gravity': 80,
+    #         # 'numIter': 1000,
+    #         # 'initialTemp': 200,
+    #         # 'coolingFactor': 0.95,
+    #         # 'minTemp': 1.0
     #     }
     # }
 ]
