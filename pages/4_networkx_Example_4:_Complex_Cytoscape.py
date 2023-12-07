@@ -208,7 +208,6 @@ G4 = nx.subgraph_view(G3,
                      filter_node=filter_node)
 
 
-
 G_cs = nx.cytoscape_data(G4)
 
 bb = nx.betweenness_centrality(G4).values()
@@ -269,6 +268,13 @@ stylesheet = [
 
 st.subheader("Interactions between characters in Game of Thrones - Series 1")
 
+layout2 = st.radio(label="Select layout of filtered graph",
+                  options=["fcose", "circle", "random", "grid", "concentric",
+                           "breadthfirst", "cose", "klay"],
+                  horizontal=True)
+
+
+
 selected = cytoscape(elements, 
                      stylesheet, 
                      key="graph", 
@@ -286,3 +292,31 @@ st.markdown(f"""
 
     """)
 
+
+
+
+# Add ability to filter down to just the network for an individual
+
+st.subheader("Show full network for particular characers")
+
+character_filter = st.selectbox("Select characters to include",
+             options=nodes['ID'].drop_duplicates().tolist(),
+             format_func=lambda x: x.title().replace("_", " "))
+
+
+def filter_node_neighbour(n1):
+
+    return (character_filter in nx.all_neighbors(G, n1)) or (n1 == character_filter)
+
+
+G5 = nx.subgraph_view(G, 
+                     filter_node=filter_node_neighbour)
+
+
+bb = nx.betweenness_centrality(G5).values()
+
+selected = cytoscape(nx.cytoscape_data(G5)['elements'], 
+                     stylesheet, 
+                     key="graph_neighbour", 
+                     layout={"name": layout2}, 
+                     height="900px")
