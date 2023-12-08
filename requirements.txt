@@ -4,6 +4,8 @@ plotly
 asyncio
 
 networkx
-st_cytoscape
+# st_cytoscape
+git+https://github.com/Bergam0t/st-cytoscape-extra#egg=st-cytoscape-extra
+dash_cytoscape
 
 gravis
