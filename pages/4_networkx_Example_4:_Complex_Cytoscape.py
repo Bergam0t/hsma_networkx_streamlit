@@ -154,9 +154,9 @@ st.markdown(
     """)
 
 
-tab1, tab2, tab3, tab4 = st.tabs(["Edge Weight and Total Interaction Filtering", 
+tab1, tab2, tab3 = st.tabs(["Edge Weight and Total Interaction Filtering", 
                             "Filter to Node Neighbourhood",
-                    "Minimum Spanning Trees Pruning", 
+                    # "Minimum Spanning Trees Pruning", 
                     "Network Metrics"])
 
 layout_options_list = ["cise", "fcose", "circle", "random", "grid", "concentric",
@@ -353,6 +353,9 @@ with tab2:
     else:
         layout_dict = {"name": layout2}
 
+    st.markdown(f"{character_filter} interacts with {len(G5.nodes)} characters ({round((len(G5.nodes)/len(G.nodes))*100, 2)}%) of a total of {len(G.nodes)} who appear in this season.")
+
+    st.markdown(f"They had {nodes[nodes['ID'] == character_filter]['TotalInteractions'].values[0]} interactions in total.")
 
     selected = cytoscape(nx.cytoscape_data(G5)['elements'], 
                         stylesheet, 
@@ -360,57 +363,61 @@ with tab2:
                         layout=layout_dict, 
                         height="900px")
 
-with tab3:
-    st.subheader("Pruning with Minimum Spanning Trees Algorithm")
+# with tab3:
+#     st.subheader("Pruning with Minimum Spanning Trees Algorithm")
 
-    layout3 = st.radio(label="Select layout for minimum spanning tree graph",
-                    options=layout_options_list,
-                    horizontal=True)
+#     layout3 = st.radio(label="Select layout for minimum spanning tree graph",
+#                     options=layout_options_list,
+#                     horizontal=True)
 
-    T = nx.minimum_spanning_tree(G)
+#     T = nx.minimum_spanning_tree(G)
 
+#     Ti = T.copy()
+#     Ti.remove_nodes_from(list(nx.isolates(Ti)))
 
-    stylesheet = [
-        {
-            "selector": "node", 
-            "style": {
-                "label": "data(Label)", 
-                "width": f"mapData(Size, {min(bb)}, {max(bb)}, 3, 15)", 
-                "height": f"mapData(Size, {min(bb)}, {max(bb)}, 3, 15)",
-                "font-size": "8px",
-                "background-color": "data(CommunityColor)",
-                # "transparency": f'mapData(Weight, 0, {max(bb)}, 0.4, 1)'
-                }
-            },
+#     st.markdown(f"{len(Ti.nodes)} nodes remaining of {len(G.nodes)} after MST algorithm applied.")
 
-        {
-            "selector": "edge",
-            "style": {
-                "width": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 5)',
-                "curve-style": "bezier",
-                "opacity": f'mapData(Weight, 0, {edges["Weight"].max()}, 0.4, 1)'
-                #"target-arrow-shape": "triangle",
-                #"arrow-scale": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 1)'
-            },
-        }
-     ]
+#     stylesheet = [
+#         {
+#             "selector": "node", 
+#             "style": {
+#                 "label": "data(Label)", 
+#                 "width": f"mapData(Size, {min(bb)}, {max(bb)}, 3, 15)", 
+#                 "height": f"mapData(Size, {min(bb)}, {max(bb)}, 3, 15)",
+#                 "font-size": "8px",
+#                 "background-color": "data(CommunityColor)",
+#                 # "transparency": f'mapData(Weight, 0, {max(bb)}, 0.4, 1)'
+#                 }
+#             },
+
+#         {
+#             "selector": "edge",
+#             "style": {
+#                 "width": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 5)',
+#                 "curve-style": "bezier",
+#                 "opacity": f'mapData(Weight, 0, {edges["Weight"].max()}, 0.4, 1)'
+#                 #"target-arrow-shape": "triangle",
+#                 #"arrow-scale": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 1)'
+#             },
+#         }
+#      ]
     
-    if layout3 == "cise": 
-        t1 = [(list(i)) for i in c]
-        #[leaf for branch in tree for leaf in branch]
-        clusters = [[node for node in t1[i] if node in list(T.nodes)] for i in range(len(t1))]
-        layout_dict = {"name": layout3, 
-                       "clusters": clusters}
-    else:
-        layout_dict = {"name": layout3}
+#     if layout3 == "cise": 
+#         t1 = [(list(i)) for i in c]
+#         #[leaf for branch in tree for leaf in branch]
+#         clusters = [[node for node in t1[i] if node in list(Ti.nodes)] for i in range(len(t1))]
+#         layout_dict = {"name": layout3, 
+#                        "clusters": clusters}
+#     else:
+#         layout_dict = {"name": layout3}
 
 
-    selected = cytoscape(nx.cytoscape_data(T)['elements'], 
-                        stylesheet, 
-                        key="graph_mst", 
-                        layout=layout_dict, 
-                        height="900px")
+#     selected = cytoscape(nx.cytoscape_data(T)['elements'], 
+#                         stylesheet, 
+#                         key="graph_mst", 
+#                         layout=layout_dict, 
+#                         height="900px")
 
-with tab4:
+with tab3:
     st.subheader("Graphs of network metrics")
 

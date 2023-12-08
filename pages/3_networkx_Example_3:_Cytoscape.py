@@ -5,7 +5,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from helper_functions import add_logo
 import gc
-from st_cytoscape import cytoscape
+from st_cytoscape_extra import cytoscape
 
 st.set_page_config(
     page_title="Static 2D Example",
