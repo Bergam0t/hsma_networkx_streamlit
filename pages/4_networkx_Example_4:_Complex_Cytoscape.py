@@ -63,6 +63,9 @@ nodes = nodes.merge(total_interactions_node, how="left", left_on="ID", right_on=
 nodeData = nodes
 edgeData = edges
 
+# t1 = [(list(i)) for i in c]
+
+
 #Create graph function - networkX
 def create_graph(nodeData, edgeData):
     ## Initiate the graph object
@@ -127,10 +130,10 @@ def create_graph(nodeData, edgeData):
     nx.set_node_attributes(G, communityColorDicts, "CommunityColor")
     # nx.set_node_attributes(G, colorDicts, "Color")
 
-    return G
+    return G, c
 
 # Create the graph object
-G = create_graph(nodes,edges)
+G, c = create_graph(nodes,edges)
 # Define the node positions
 # pos = nx.circular_layout(G)
 # Define the attribute inputs
@@ -156,10 +159,11 @@ tab1, tab2, tab3, tab4 = st.tabs(["Edge Weight and Total Interaction Filtering",
                     "Minimum Spanning Trees Pruning", 
                     "Network Metrics"])
 
-layout_options_list = ["fcose", "circle", "random", "grid", "concentric",
+layout_options_list = ["cise", "fcose", "circle", "random", "grid", "concentric",
                            "breadthfirst", "cose", "klay", 
-                           "avsdf", "elk","dagre", "cola"
-                        , "cise"
+                           "avsdf", "elk","dagre", "cola", 
+                            "spread"
+                        # , "euler"
                            ]
 with tab1:
     st.markdown("""
@@ -254,29 +258,7 @@ with tab1:
                 #"target-arrow-shape": "triangle",
                 #"arrow-scale": f'mapData(Weight, 1, {edges["Weight"].max()}, 0.1, 1)'
             },
-        },
-
-        # {
-        #     "layout": {
-        #         # 'EdgeLength': length,
-        #         # 'maxSimulationTime': 8000,
-        #         # 'convergenceThreshold': 0.001,
-        #         # 'nodeOverlap': 20,
-        #         # 'refresh': 20,
-        #         # 'fit': True,
-        #         # 'padding': 30,
-        #         # 'randomize': True,
-        #         # 'componentSpacing': 100,
-        #         'nodeRepulsion': 400,
-        #         # 'edgeElasticity': 100000,
-        #         # 'nestingFactor': 5,
-        #         # 'gravity': 80,
-        #         # 'numIter': 1000,
-        #         # 'initialTemp': 200,
-        #         # 'coolingFactor': 0.95,
-        #         # 'minTemp': 1.0
-        #     }
-        # }
+        }
     ]
 
 
@@ -284,12 +266,21 @@ with tab1:
 
     st.subheader("Interactions between characters in Game of Thrones - Series 1")
 
+    if layout == "cise": 
+        t1 = [(list(i)) for i in c]
+        #[leaf for branch in tree for leaf in branch]
+        clusters = [[node for node in t1[i] if node in list(G4.nodes)] for i in range(len(t1))]
+        layout_dict = {"name": layout, 
+                       "clusters": clusters}
+    else:
+        layout_dict = {"name": layout}
+
     selected = cytoscape(elements, 
                         stylesheet, 
                         key="graph", 
-                        layout={"name": layout}, 
+                        layout=layout_dict, 
                         height="900px")
-
+   
     st.markdown(f"""
         Links representing fewer than {min_threshold_weight} interactions have been removed from this graph. 
         
@@ -349,11 +340,24 @@ with tab2:
             },
         }
      ]
+    
+
+
+
+    if layout2 == "cise": 
+        t1 = [(list(i)) for i in c]
+        #[leaf for branch in tree for leaf in branch]
+        clusters = [[node for node in t1[i] if node in list(G5.nodes)] for i in range(len(t1))]
+
+        layout_dict = {"name": layout2, "clusters": clusters}
+    else:
+        layout_dict = {"name": layout2}
+
 
     selected = cytoscape(nx.cytoscape_data(G5)['elements'], 
                         stylesheet, 
                         key="graph_neighbour", 
-                        layout={"name": layout2}, 
+                        layout=layout_dict, 
                         height="900px")
 
 with tab3:
@@ -390,11 +394,21 @@ with tab3:
             },
         }
      ]
+    
+    if layout3 == "cise": 
+        t1 = [(list(i)) for i in c]
+        #[leaf for branch in tree for leaf in branch]
+        clusters = [[node for node in t1[i] if node in list(T.nodes)] for i in range(len(t1))]
+        layout_dict = {"name": layout3, 
+                       "clusters": clusters}
+    else:
+        layout_dict = {"name": layout3}
+
 
     selected = cytoscape(nx.cytoscape_data(T)['elements'], 
                         stylesheet, 
                         key="graph_mst", 
-                        layout={"name": layout3}, 
+                        layout=layout_dict, 
                         height="900px")
 
 with tab4:
