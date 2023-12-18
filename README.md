@@ -13,3 +13,5 @@ Take note of the warning text on the page - filtered graphs should be interprete
 ![image](https://github.com/Bergam0t/hsma_networkx_streamlit/assets/29951987/8b740a09-7307-438a-b8a1-c406c3b7ed5d)
 
 ![image](https://github.com/Bergam0t/hsma_networkx_streamlit/assets/29951987/dd1e556b-f327-454f-b2de-55a3a2b86e5a)
+
+![image](https://github.com/Bergam0t/hsma_networkx_streamlit/assets/29951987/4eb50e22-6f62-48a6-8e29-bb289fde51b4)
