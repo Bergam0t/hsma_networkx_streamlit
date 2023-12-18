@@ -1,5 +1,7 @@
 # hsma_networkx_streamlit
 
+**NOT CURRENTLY DEPLOYABLE - CAN BE CLONED AND RUN LOCALLY ONLY IF ALSO RUNNING DEVELOPMENT SERVER FOR st-cytoscape-extra LOCALLY** 
+
 Experimentation with visualisation methods for network x in Streamlit. 
 
 Goes alongside https://github.com/Bergam0t/st-cytoscape-extra 
